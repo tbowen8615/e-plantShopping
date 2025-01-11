@@ -20,7 +20,7 @@ function ProductList() {
 
   // 4) UseSelector to get the cart items and compute total item count
   const cartItems = useSelector((state) => state.cart.items || []);
-  const totalItems = cartItems.length;
+  const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0)
 
   // Your big plantsArray, unchanged
   const plantsArray = [
