@@ -1,33 +1,67 @@
 .about-us-container {
-    width: 1000px;
-    /* margin: 0 auto; */
-    /* padding: 20px; */
-    /* background-color: red; */
-    text-align: justify;
-  }
-  
-  .about-us-heading {
-    font-size: 32px;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  .about-us-description {
-    font-size: 18px;
-    color: #666;
-    margin-bottom: 30px;
-    text-align: center;
-  }
-  
-  .about-us-content {
-    font-size: 18px;
-    margin-bottom: 20px;
-  }
-  .plant_logo_right{
-    text-align: right;
+  width: 90%; /* Use a percentage width for responsiveness */
+  max-width: 1000px; /* Set a maximum width */
+  margin: 0 auto; /* Center the container */
+  padding: 20px; /* Add padding for better spacing */
+  text-align: justify;
+}
+
+.about-us-heading {
+  font-size: 32px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.about-us-description {
+  font-size: 18px;
+  color: #666;
+  margin-bottom: 30px;
+  text-align: center;
+}
+
+.about-us-content {
+  font-size: 18px;
+  margin-bottom: 20px;
+}
+
+.plant_logo_right {
+  text-align: right;
+}
+
+.plant_logo_left {
+  text-align: left;
+}
+
+/* Responsive Design Adjustments */
+@media screen and (max-width: 768px) {
+  .about-us-container {
+    width: 95%; /* Reduce width for smaller screens */
+    padding: 15px; /* Adjust padding */
   }
 
-  .plant_logo_left{
-    text-align: left;
+  .about-us-heading {
+    font-size: 28px; /* Smaller font size */
   }
+
+  .about-us-description,
+  .about-us-content {
+    font-size: 16px; /* Smaller font size */
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .about-us-container {
+    width: 100%; /* Use full width on very small screens */
+    padding: 10px; /* Adjust padding */
+  }
+
+  .about-us-heading {
+    font-size: 24px; /* Further reduce font size */
+  }
+
+  .about-us-description,
+  .about-us-content {
+    font-size: 14px; /* Further reduce font size */
+  }
+}
