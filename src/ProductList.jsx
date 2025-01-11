@@ -12,7 +12,7 @@ function ProductList() {
   const [showCart, setShowCart] = useState(false); 
   const [showPlants, setShowPlants] = useState(false); // Controls visibility of the plant listing
 
-  // 2) Local state to track which products have been added (for "Added" button text)
+  // 2) Local state to track which products have been added (for "Added" button text and disabling)
   const [addedToCart, setAddedToCart] = useState({});
 
   // 3) Redux dispatch
@@ -257,6 +257,7 @@ function ProductList() {
     e.preventDefault();
     setShowCart(true); // Show cart
   };
+
   const handlePlantsClick = (e) => {
     e.preventDefault();
     setShowPlants(true); // Show plant listing
@@ -271,11 +272,14 @@ function ProductList() {
 
   // 5) handleAddToCart: dispatch addItem and update local 'addedToCart'
   const handleAddToCart = (plant) => {
-    dispatch(addItem(plant)); 
-    setAddedToCart((prevState) => ({
-      ...prevState,
-      [plant.name]: true, // mark plant as "added"
-    }));
+    // Dispatch only if not yet added
+    if (!addedToCart[plant.name]) {
+      dispatch(addItem(plant)); 
+      setAddedToCart((prevState) => ({
+        ...prevState,
+        [plant.name]: true, // mark plant as "added"
+      }));
+    }
   };
 
   return (
@@ -377,6 +381,12 @@ function ProductList() {
                         <button 
                           className="product-button"
                           onClick={() => handleAddToCart(plant)}
+                          disabled={!!addedToCart[plant.name]}
+                          style={
+                            addedToCart[plant.name]
+                              ? { backgroundColor: 'gray', cursor: 'not-allowed' }
+                              : {}
+                          }
                         >
                           {addedToCart[plant.name] ? 'Added' : 'Add to Cart'}
                         </button>
