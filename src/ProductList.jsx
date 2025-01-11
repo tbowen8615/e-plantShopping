@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import './ProductList.css';
 import CartItem from './CartItem';
 
-// 1) Import the dispatch hook, the selector hook, and addItem from your CartSlice
+// 1) Import dispatch and selector hooks, plus addItem from your CartSlice
 import { useDispatch, useSelector } from 'react-redux';
 import { addItem } from './CartSlice'; // <-- Adjust path as needed
 
@@ -12,17 +12,47 @@ function ProductList() {
   const [showCart, setShowCart] = useState(false); 
   const [showPlants, setShowPlants] = useState(false); // Controls visibility of the plant listing
 
-  // 2) Local state to track which products have been added (for "Added" button text and disabling)
+  // 2) Track which products have been added (for button disabling/text)
   const [addedToCart, setAddedToCart] = useState({});
 
   // 3) Redux dispatch
   const dispatch = useDispatch();
 
-  // 4) UseSelector to get the cart items and compute total item count
+  // 4) Grab cart items from Redux store
   const cartItems = useSelector((state) => state.cart.items || []);
-  const totalItems = cartItems.reduce((acc, item) => acc + item.quantity, 0)
 
-  // Your big plantsArray, unchanged
+  // Instead of counting distinct items, sum up their quantities
+  const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+
+  // -------------- NEW: Re-enable "Add to Cart" if item is removed (quantity = 0) --------------
+  //
+  // This effect runs whenever the cartItems in the Redux store change. It checks
+  // whether each item in local `addedToCart` still exists in the Redux `cartItems`.
+  // If not, that means the user decremented to 0 or removed it from the cart, so
+  // we remove it from `addedToCart` to re-enable the "Add to Cart" button.
+  //
+  useEffect(() => {
+    // Create a set of item names currently in the Redux cart
+    const cartSet = new Set(cartItems.map((item) => item.name));
+
+    // Update our local "addedToCart" state, removing anything not in cartSet
+    setAddedToCart((prevState) => {
+      const newState = { ...prevState };
+      let changed = false;
+
+      for (const [name] of Object.entries(newState)) {
+        if (!cartSet.has(name)) {
+          delete newState[name];
+          changed = true;
+        }
+      }
+
+      return changed ? newState : prevState;
+    });
+  }, [cartItems]);
+  // --------------- END OF NEW EFFECT ---------------
+
+  // A large plants array (unchanged)
   const plantsArray = [
     {
       category: "Air Purifying Plants",
@@ -270,14 +300,13 @@ function ProductList() {
     setShowCart(false);
   };
 
-  // 5) handleAddToCart: dispatch addItem and update local 'addedToCart'
+  // 5) Add to cart only if item not already in "addedToCart"
   const handleAddToCart = (plant) => {
-    // Dispatch only if not yet added
     if (!addedToCart[plant.name]) {
       dispatch(addItem(plant)); 
       setAddedToCart((prevState) => ({
         ...prevState,
-        [plant.name]: true, // mark plant as "added"
+        [plant.name]: true, // mark plant as added
       }));
     }
   };
@@ -287,9 +316,9 @@ function ProductList() {
       <div className="navbar" style={styleObj}>
         <div className="tag">
           <div className="luxury">
-            <img 
-              src="https://cdn.pixabay.com/photo/2020/08/05/13/12/eco-5465432_1280.png" 
-              alt="" 
+            <img
+              src="https://cdn.pixabay.com/photo/2020/08/05/13/12/eco-5465432_1280.png"
+              alt=""
             />
             <a href="/" style={{ textDecoration:'none' }}>
               <div>
@@ -311,7 +340,6 @@ function ProductList() {
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 256 256"
-                  id="IconChangeColor"
                   height="68"
                   width="68"
                 >
@@ -325,12 +353,11 @@ function ProductList() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth="2"
-                    id="mainIconPathAttribute"
                   ></path>
                 </svg>
                 {totalItems > 0 && (
-                  <span 
-                    style={{ 
+                  <span
+                    style={{
                       backgroundColor: 'red',
                       borderRadius: '50%',
                       color: 'white',
@@ -364,21 +391,17 @@ function ProductList() {
                   <div className="product-list">
                     {category.plants.map((plant, plantIndex) => (
                       <div className="product-card" key={plantIndex}>
-                        <img 
-                          className="product-image" 
-                          src={plant.image} 
-                          alt={plant.name} 
+                        <img
+                          className="product-image"
+                          src={plant.image}
+                          alt={plant.name}
                         />
-                        <div className="product-title">
-                          {plant.name}
-                        </div>
+                        <div className="product-title">{plant.name}</div>
                         <div className="product-description">
                           {plant.description}
                         </div>
-                        <div className="product-cost">
-                          {plant.cost}
-                        </div>
-                        <button 
+                        <div className="product-cost">{plant.cost}</div>
+                        <button
                           className="product-button"
                           onClick={() => handleAddToCart(plant)}
                           disabled={!!addedToCart[plant.name]}
