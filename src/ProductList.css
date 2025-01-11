@@ -40,12 +40,11 @@ body {
 }
 
 /* Product Grid */
-.product-grid {
-    display:flex;
-    flex-direction: column;
-    width: 100vw;
-    align-items: center;
-    justify-content: center;
+.product-grid h1 {
+    text-align: center;
+    margin: 20px 0;
+    font-size: 2rem;
+    color: #333;
 }
 .product-list {
     display: flex;
