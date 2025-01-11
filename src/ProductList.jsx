@@ -1,9 +1,11 @@
+// ProductList.jsx
+
 import React, { useState, useEffect } from 'react';
 import './ProductList.css';
 import CartItem from './CartItem';
 
-// 1) Import the dispatch hook and addItem from your CartSlice
-import { useDispatch } from 'react-redux';
+// 1) Import the dispatch hook, the selector hook, and addItem from your CartSlice
+import { useDispatch, useSelector } from 'react-redux';
 import { addItem } from './CartSlice'; // <-- Adjust path as needed
 
 function ProductList() {
@@ -15,6 +17,10 @@ function ProductList() {
 
   // 3) Redux dispatch
   const dispatch = useDispatch();
+
+  // 4) UseSelector to get the cart items and compute total item count
+  const cartItems = useSelector((state) => state.cart.items || []);
+  const totalItems = cartItems.length;
 
   // Your big plantsArray, unchanged
   const plantsArray = [
@@ -259,12 +265,11 @@ function ProductList() {
 
   // Called from CartItem to go back to the plant listings
   const handleContinueShopping = () => {
-    // Removed e.preventDefault(); so link behavior doesn't block 
     setShowPlants(true);
     setShowCart(false);
   };
 
-  // 4) handleAddToCart: dispatch addItem and update local 'addedToCart'
+  // 5) handleAddToCart: dispatch addItem and update local 'addedToCart'
   const handleAddToCart = (plant) => {
     dispatch(addItem(plant)); 
     setAddedToCart((prevState) => ({
@@ -298,7 +303,7 @@ function ProductList() {
           </div>
           <div>
             <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}>
-              <h1 className='cart'>
+              <div style={{ position: 'relative', display: 'inline-block' }}>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 256 256"
@@ -319,7 +324,23 @@ function ProductList() {
                     id="mainIconPathAttribute"
                   ></path>
                 </svg>
-              </h1>
+                {totalItems > 0 && (
+                  <span 
+                    style={{ 
+                      backgroundColor: 'red',
+                      borderRadius: '50%',
+                      color: 'white',
+                      padding: '4px 8px',
+                      position: 'absolute',
+                      top: '0px',
+                      left: '0px',
+                      fontSize: '16px'
+                    }}
+                  >
+                    {totalItems}
+                  </span>
+                )}
+              </div>
             </a>
           </div>
         </div>
